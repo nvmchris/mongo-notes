@@ -1,37 +1,40 @@
-"""Download script: fetch all jokes or only filtered ones from MongoDB Atlas."""
+"""Download script: fetch all mods or only filtered ones from MongoDB Atlas."""
 import re
 
 from bson import json_util
 
-from db import connect, jokes_collection
+from db import LOADERS, connect, mods_collection
 
-FILTERS = {
-    "1": ("All jokes", {}),
-    "2": ("Only youth-friendly (no FSK18)", {"fsk18": False}),
-    "3": ("Only FSK18", {"fsk18": True}),
-}
+
+def build_filter():
+    """Ask for optional filters; empty answers mean 'any'."""
+    query = {}
+    print("Loader filter: " + ", ".join(f"{i}) {l}" for i, l in enumerate(LOADERS, 1)))
+    loader = input("Loader (empty = all): ").strip()
+    if loader.isdigit() and 1 <= int(loader) <= len(LOADERS):
+        query["loader"] = LOADERS[int(loader) - 1]
+    version = input("Minecraft version (empty = all): ").strip()
+    if version:
+        query["mc_version"] = version
+    word = input("Name contains (empty = all): ").strip()
+    if word:
+        query["name"] = {"$regex": re.escape(word), "$options": "i"}
+    return query
 
 
 def main():
-    jokes = jokes_collection(connect())
-    for key, (label, _) in FILTERS.items():
-        print(f"{key}) {label}")
-    label, query = FILTERS.get(input("Choose filter: ").strip(), FILTERS["1"])
-    word = input("Only jokes containing (optional): ").strip()
-    if word:
-        query = {**query, "text": {"$regex": re.escape(word), "$options": "i"}}
-
-    results = list(jokes.find(query).sort("created_at", 1))
-    print(f"\n{label}: {len(results)} joke(s)\n")
-    for joke in results:
-        tag = "FSK18" if joke.get("fsk18") else "all ages"
-        print(f"- [{tag}] {joke['text']}  -- {joke.get('author', 'anonymous')}")
+    mods = mods_collection(connect())
+    query = build_filter()
+    results = list(mods.find(query).sort("name", 1))
+    print(f"\n{len(results)} mod(s) found\n")
+    for mod in results:
+        print(f"- {mod['name']}  [{mod['loader']}, {mod['mc_version']}]")
 
     path = input("\nSave to JSON file (empty = don't save): ").strip()
     if path:
         with open(path, "w", encoding="utf-8") as f:
             f.write(json_util.dumps(results, indent=2, ensure_ascii=False))
-        print(f"Saved {len(results)} joke(s) to {path}")
+        print(f"Saved {len(results)} mod(s) to {path}")
 
 
 if __name__ == "__main__":

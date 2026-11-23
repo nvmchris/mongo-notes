@@ -1,34 +1,39 @@
-"""Upload script: enter funny jokes via the console and store them in MongoDB Atlas."""
+"""Upload script: enter Minecraft mods via the console and store them in MongoDB Atlas.
+
+This is a mockup: only mod names and metadata are stored, not the mod files.
+"""
 from datetime import datetime, timezone
 
-from db import connect, jokes_collection
+from db import LOADERS, connect, mods_collection
 
 
-def ask_yes_no(prompt):
+def ask_loader():
+    for i, loader in enumerate(LOADERS, 1):
+        print(f"  {i}) {loader}")
     while True:
-        answer = input(f"{prompt} [y/n]: ").strip().lower()
-        if answer in ("y", "n"):
-            return answer == "y"
-        print("Please answer y or n.")
+        answer = input("Mod loader (number): ").strip()
+        if answer.isdigit() and 1 <= int(answer) <= len(LOADERS):
+            return LOADERS[int(answer) - 1]
+        print(f"Please enter a number from 1 to {len(LOADERS)}.")
 
 
 def main():
-    jokes = jokes_collection(connect())
-    print("Enter jokes. Leave the joke empty to finish.\n")
+    mods = mods_collection(connect())
+    print("Enter mods. Leave the name empty to finish.\n")
     count = 0
     while True:
-        text = input("Joke: ").strip()
-        if not text:
+        name = input("Mod name: ").strip()
+        if not name:
             break
-        jokes.insert_one({
-            "text": text,
-            "fsk18": ask_yes_no("FSK18 (adults only)?"),
-            "author": input("Author (optional): ").strip() or "anonymous",
+        mods.insert_one({
+            "name": name,
+            "loader": ask_loader(),
+            "mc_version": input("Minecraft version (e.g. 1.21.1): ").strip() or "unknown",
             "created_at": datetime.now(timezone.utc),
         })
         count += 1
         print("Saved.\n")
-    print(f"Uploaded {count} joke(s). Total in database: {jokes.count_documents({})}")
+    print(f"Uploaded {count} mod(s). Total in database: {mods.count_documents({})}")
 
 
 if __name__ == "__main__":

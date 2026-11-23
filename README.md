@@ -1,12 +1,14 @@
-# mongo-notes – Fun with MongoDB Atlas and Python
+# mongo-notes – Minecraft mod management (mockup)
 
-Python scripts to upload and download funny data to a cloud database (MongoDB Atlas).
+Python scripts to upload and download Minecraft mod entries to a cloud database
+(MongoDB Atlas). It's a mockup: only mod names and metadata (loader, Minecraft version)
+are stored, not the mod files.
 
 ## Scripts
 | Script | What it does |
 |---|---|
-| `upload.py` | Creates database `fun_db` with collection `jokes` (if missing) and lets you enter jokes in the console, each classified as FSK18 or not. |
-| `download.py` | Downloads all jokes, or filters: only youth-friendly, only FSK18, optionally by a word. Prints them and can save them to a JSON file. |
+| `upload.py` | Creates database `minecraft` with collection `mods` (if missing) and lets you enter mods in the console: name, loader (Fabric, Forge, NeoForge, Quilt) and Minecraft version. |
+| `download.py` | Downloads all mods, or filters by loader, Minecraft version and/or part of the name. Prints them and can save them to a JSON file. |
 
 `db.py` holds the shared connection code. Saved files use MongoDB Extended JSON, so `_id` and
 dates are kept.
@@ -22,8 +24,8 @@ dates are kept.
    ```bash
    python -m venv .venv && source .venv/bin/activate
    pip install -r requirements.txt
-   python upload.py     # enter jokes
-   python download.py   # get all or only youth-friendly jokes
+   python upload.py     # enter mods
+   python download.py   # get all or filtered mods
    ```
 
 ## Workflow
