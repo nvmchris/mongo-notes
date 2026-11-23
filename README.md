@@ -1,16 +1,17 @@
-# mongo-notes – MongoDB data manager
+# mongo-notes – Minecraft mod management (mockup)
 
-Small interactive Python command-line app to manage any collection in MongoDB Atlas:
+Python scripts to upload and download Minecraft mod entries to a cloud database
+(MongoDB Atlas). It's a mockup: only mod names and metadata (loader, Minecraft version)
+are stored, not the mod files.
 
-- choose a database and collection (or type a new name to create one)
-- overview: document count and a preview
-- download the whole collection or only documents matching a filter to a JSON file
-- upload a JSON file (one object or a list) into a collection, optionally replacing by `_id`
-- delete all or filtered documents (with confirmation)
+## Scripts
+| Script | What it does |
+|---|---|
+| `upload.py` | Creates database `minecraft` with collection `mods` (if missing) and lets you enter mods in the console: name, loader (Fabric, Forge, NeoForge, Quilt) and Minecraft version. |
+| `download.py` | Downloads all mods, or filters by loader, Minecraft version and/or part of the name. Prints them and can save them to a JSON file. |
 
-Filters use MongoDB query syntax as JSON, for example `{"status": "active"}` or
-`{"age": {"$gte": 18}}`. Files use MongoDB Extended JSON, so `_id` and dates survive a
-download/upload round trip.
+`db.py` holds the shared connection code. Saved files use MongoDB Extended JSON, so `_id` and
+dates are kept.
 
 ## Setup
 1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/atlas), add a database user
@@ -23,7 +24,8 @@ download/upload round trip.
    ```bash
    python -m venv .venv && source .venv/bin/activate
    pip install -r requirements.txt
-   python main.py
+   python upload.py     # enter mods
+   python download.py   # get all or filtered mods
    ```
 
 ## Workflow
