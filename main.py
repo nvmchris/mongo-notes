@@ -3,24 +3,12 @@
 Pick a database and collection, download all or filtered documents to a
 JSON file, and upload JSON files into a collection.
 """
-import os
-
 from bson import json_util
-from dotenv import load_dotenv
-from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 
+from db import connect
+
 SYSTEM_DBS = {"admin", "local", "config"}
-
-
-def connect():
-    load_dotenv()
-    uri = os.getenv("MONGODB_URI")
-    if not uri:
-        raise SystemExit("MONGODB_URI is not set. Copy .env.example to .env and fill it in.")
-    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-    client.admin.command("ping")
-    return client
 
 
 def choose(prompt, names):
