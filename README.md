@@ -7,10 +7,9 @@ Python scripts to upload and download funny data to a cloud database (MongoDB At
 |---|---|
 | `upload.py` | Creates database `fun_db` with collection `jokes` (if missing) and lets you enter jokes in the console, each classified as FSK18 or not. |
 | `download.py` | Downloads all jokes, or filters: only youth-friendly, only FSK18, optionally by a word. Prints them and can save them to a JSON file. |
-| `main.py` | General data manager for any collection: choose database/collection, download all or filtered (MongoDB JSON query), upload JSON files, delete. |
 
-`db.py` holds the shared connection code. Files use MongoDB Extended JSON, so `_id` and
-dates survive a download/upload round trip.
+`db.py` holds the shared connection code. Saved files use MongoDB Extended JSON, so `_id` and
+dates are kept.
 
 ## Setup
 1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/atlas), add a database user

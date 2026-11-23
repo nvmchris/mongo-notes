@@ -1,4 +1,4 @@
-"""Shared MongoDB Atlas connection helper."""
+"""MongoDB Atlas connection helper used by upload.py and download.py."""
 import os
 
 from dotenv import load_dotenv
